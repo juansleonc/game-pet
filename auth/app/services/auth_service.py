@@ -1,33 +1,54 @@
+import os
 import jwt
 from datetime import datetime, timedelta, timezone
 
 class AuthService:
-    def __init__(self, secret_key):
-        self.secret_key = secret_key
+    def __init__(self):
+        self.secret_key = os.getenv('SECRET_KEY', '')
+        if not self.secret_key:
+            raise ValueError("Secret key is not set.")
 
     def generate_token(self, user_id):
         payload = {
             "exp": datetime.now(timezone.utc) + timedelta(days=1),
             "iat": datetime.now(timezone.utc),
-            "sub": str(user_id)  # Asegurando que el user_id sea una cadena si no lo es
+            "sub": str(user_id)
         }
-        return jwt.encode(payload, self.secret_key, algorithm="HS256").decode('utf-8')  # Asegura compatibilidad entre Python 2 y 3
+        return jwt.encode(payload, self.secret_key, algorithm="HS256")
 
     def decode_token(self, token):
         try:
             payload = jwt.decode(token, self.secret_key, algorithms=["HS256"])
-            return payload['sub'], None  # Retorna el user_id y ningún error
+            print('token-----------------------------------')
+            print(token)
+            print('secret_key-----------------------------------')
+            print(self.secret_key)
+            print('payload-----------------------------------')
+            print(payload)
+            
+            return payload
         except jwt.ExpiredSignatureError:
-            return None, "Token has expired"
+            raise ValueError("Token has expired")
         except jwt.InvalidTokenError:
-            return None, "Invalid token"
+            raise ValueError("Invalid token")
+
+    def verify_token(self, token):
+        # try:
+        print(f"Type of secret key: {type(self.secret_key)}")
+        print(f"Value of secret key: {self.secret_key}")
+
+        user_id = self.decode_token(token)
+        print(user_id)
+        return True, None  
+        # except Exception as e:
+        #     return False, str(e)
 
     def generate_password_reset_token(self, user_id):
         payload = {
-            "exp": datetime.now(timezone.utc) + timedelta(hours=2),  # Tiempo más corto para reseteo de contraseña
+            "exp": datetime.now(timezone.utc) + timedelta(hours=2),
             "iat": datetime.now(timezone.utc),
             "sub": str(user_id),
-            "scope": "password_reset"  # Indicar el propósito del token
+            "scope": "password_reset"
         }
-        return jwt.encode(payload, self.secret_key, algorithm="HS256").decode('utf-8')
+        return jwt.encode(payload, self.secret_key, algorithm="HS256")
 

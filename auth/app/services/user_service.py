@@ -5,7 +5,7 @@ import os
 
 class UserService:
     def __init__(self):
-        self.auth_service = AuthService(secret_key=os.getenv('SECRET_KEY'))
+        self.auth_service = AuthService()
         self.user_model = None
 
     def set_mongo(self, mongo):
@@ -13,8 +13,9 @@ class UserService:
         
     def authenticate_user(self, email, password):
         user = self.user_model.find_by_email(email)
-        if user and check_password_hash(user.password_hash, password):
-            token = self.auth_service.generate_token(user.id)
+        print(user)
+        if user and check_password_hash(user['password_hash'], password):
+            token = self.auth_service.generate_token(user['_id'])
             return token, None
         return None, "Invalid email or password"
 
@@ -42,5 +43,5 @@ class UserService:
         try:
             user_id = self.auth_service.decode_token(token)
             return True, None
-        except Exception as e:  # You might want to catch specific exceptions
+        except Exception as e:
             return False, str(e)
