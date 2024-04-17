@@ -4,7 +4,7 @@ from app.models.user import User
 from app.services.auth_service import AuthService
 from app.services.factories import get_user_service 
 from bson import ObjectId
-from app.utils import parse_request
+from app.utils import get_jwt_from_request, parse_request
 from app.handlers import bad_request, unauthorized, conflict, success, created
 import os
 
@@ -40,12 +40,13 @@ def forgot_password():
     message, status = user_service.initiate_password_reset(email)
     return jsonify({"message": message}), status
 
-@auth_blueprint.route('/verify-token', methods=['POST'])
+@auth_blueprint.route('/verify-token', methods=['GET'])
 def verify_token():
-    token = request.json.get('token')
+    token = get_jwt_from_request(request)
     if not token:
         return bad_request('Token is required')
-    valid, error = auth_service.verify_token(token)
+    
+    valid, user_id_or_error = auth_service.verify_token(token)
     if not valid:
-        return unauthorized(error)
-    return success({}, 'Token is valid')
+        return unauthorized(user_id_or_error)
+    return success({"user_id": user_id_or_error}, 'Token is valid')

@@ -1,6 +1,12 @@
-Flask==2.1.2
+# blinker==1.7.0
+# click==8.1.7
+dnspython==2.6.1
+Flask==3.0.3
 Flask-PyMongo==2.3.0
-PyJWT==2.3.0
-gunicorn==20.1.0
-python-dotenv==0.19.2
-Werkzeug>=2.0
+gunicorn==22.0.0
+itsdangerous==2.2.0
+packaging==24.0
+PyJWT==2.8.0
+pymongo==4.6.3
+python-dotenv==1.0.1
+Werkzeug==3.0.2

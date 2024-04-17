@@ -38,10 +38,3 @@ class UserService:
         # Here you would typically send the reset token to the user's email
         # This is just a placeholder response
         return f"Password reset token generated and sent to {email}", 200
-
-    def verify_token(self, token):
-        try:
-            user_id = self.auth_service.decode_token(token)
-            return True, None
-        except Exception as e:
-            return False, str(e)
