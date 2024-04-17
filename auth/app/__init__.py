@@ -16,7 +16,7 @@ def create_app():
     else:
         app.config.from_object(DevelopmentConfig())
 
-    mongo = PyMongo(app)
+    app.mongo = PyMongo(app)
     app.register_blueprint(auth_blueprint, url_prefix='/api/auth')
 
     return app

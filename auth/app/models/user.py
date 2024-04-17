@@ -10,7 +10,7 @@ class User:
         user = self.mongo.db.users.find_one({"email": email})
         return user if user else None
 
-    def create_user(self, email, password_hash):
+    def create(self, email, password_hash):
         user_data = {
             "email": email,
             "password_hash": password_hash,
